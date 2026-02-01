@@ -19,15 +19,15 @@ html, body {
   width: 100%;
   height: 100%;
   background: linear-gradient(135deg, #ff4d6d, #ff758f);
-  display: flex;
-  justify-content: center;
-  align-items: center;
   overflow: hidden;
 }
 
+/* карточка */
 .card {
-  position: relative;
-  z-index: 10;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   background: rgba(0,0,0,0.25);
   padding: 30px 20px;
   border-radius: 20px;
@@ -35,6 +35,7 @@ html, body {
   max-width: 320px;
   text-align: center;
   color: white;
+  z-index: 5;
 }
 
 button {
@@ -56,7 +57,7 @@ button {
   background: #e74c3c;
   color: white;
   position: absolute;
-  z-index: 11;
+  z-index: 10;
 }
 
 .counter {
@@ -70,8 +71,8 @@ button {
   position: absolute;
   width: 80px;
   pointer-events: none;
+  z-index: 3;
   animation: cat 2.5s ease forwards;
-  z-index: 5;
 }
 
 @keyframes cat {
@@ -90,10 +91,11 @@ button {
     <p><strong>Takhmina</strong>,<br>ты будешь моей Валентинкой? 🌹</p>
 
     <button id="yes">Да 💖</button>
-    <button id="no">Нет 😅</button>
-
     <div class="counter" id="counter">Ну попробуй 😼</div>
   </div>
+
+  <!-- КНОПКА НЕТ ВНЕ КАРТОЧКИ -->
+  <button id="no">Нет 😅</button>
 </div>
 
 <script>
@@ -105,11 +107,15 @@ const screen = document.getElementById("screen");
 let attempts = 0;
 let yesScale = 1;
 
-// стартовая позиция No
-noBtn.style.left = "55%";
-noBtn.style.top  = "65%";
+/* стартовая позиция No — под карточкой */
+function placeNoInitial() {
+  const rect = document.querySelector(".card").getBoundingClientRect();
+  noBtn.style.left = rect.left + rect.width / 2 + "px";
+  noBtn.style.top  = rect.top + rect.height + 10 + "px";
+}
+placeNoInitial();
 
-// котики по попыткам
+/* котики по попыткам */
 const catStages = [
   ["https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif"],
   ["https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif"],
@@ -131,21 +137,24 @@ function spawnCat() {
   setTimeout(() => img.remove(), 2500);
 }
 
-// НЕТ — работает ВЕЗДЕ
+/* НЕТ — улетает ДАЛЕКО */
 noBtn.addEventListener("pointerdown", () => {
   attempts++;
   counter.textContent = `Попытка №${attempts} 😼`;
 
   spawnCat();
 
-  noBtn.style.left = Math.random() * 80 + "%";
-  noBtn.style.top  = Math.random() * 80 + "%";
+  const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+  const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+
+  noBtn.style.left = Math.random() * maxX + "px";
+  noBtn.style.top  = Math.random() * maxY + "px";
 
   yesScale += 0.15;
   yesBtn.style.transform = `scale(${yesScale})`;
 });
 
-// ДА
+/* ДА */
 yesBtn.addEventListener("click", () => {
   document.body.innerHTML = `
     <div style="
