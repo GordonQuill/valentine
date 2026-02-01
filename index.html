@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #ff4d6d, #ff758f);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  overflow: hidden;
+}
+
+.card {
+  background: rgba(0,0,0,0.25);
+  padding: 30px 20px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  z-index: 2;
+}
+
+button {
+  font-size: 16px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  margin: 10px;
+}
+
+#yes {
+  background: #2ecc71;
+  color: white;
+  transition: transform 0.2s ease;
+}
+
+#no {
+  background: #e74c3c;
+  color: white;
+  position: fixed;
+  z-index: 2;
+}
+
+.cat {
+  position: fixed;
+  width: 80px;
+  z-index: 1;
+  pointer-events: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>Hey 💕</h1>
+  <p>
+    <strong>Takhmina</strong>,<br>
+    will you be my Valentine? 🌹
+  </p>
+
+  <button id="yes">Yes 💖</button>
+  <button id="no">No 😅</button>
+</div>
+
+<script>
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
+
+let yesScale = 1;
+
+// 🐱 GIF котика
+const catGifs = [
+  "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif",
+  "https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif",
+  "https://media.giphy.com/media/13borq7Zo2kulO/giphy.gif"
+];
+
+function spawnCat() {
+  const img = document.createElement("img");
+  img.src = catGifs[Math.floor(Math.random() * catGifs.length)];
+  img.className = "cat";
+
+  img.style.left = Math.random() * (window.innerWidth - 80) + "px";
+  img.style.top  = Math.random() * (window.innerHeight - 80) + "px";
+
+  document.body.appendChild(img);
+
+  setTimeout(() => img.remove(), 2500);
+}
+
+// 🔴 No — убегает + вибрация + котики
+function moveNo(e) {
+  e.preventDefault();
+
+  // 📳 ВИБРАЦИЯ
+  if (navigator.vibrate) {
+    navigator.vibrate([60, 40, 60]);
+  }
+
+  // 🐱 КОТИК
+  spawnCat();
+
+  const padding = 20;
+  const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+  const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+  const x = Math.random() * maxX;
+  const y = Math.random() * maxY;
+
+  noBtn.style.left = x + "px";
+  noBtn.style.top  = y + "px";
+
+  // 🟢 Yes растёт
+  yesScale += 0.15;
+  yesBtn.style.transform = `scale(${yesScale})`;
+}
+
+noBtn.addEventListener("touchstart", moveNo, { passive: false });
+noBtn.addEventListener("mouseover", moveNo);
+
+// 🟢 YES — финал
+yesBtn.addEventListener("click", () => {
+  document.body.innerHTML = `
+    <div style="
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      flex-direction:column;
+      background:linear-gradient(135deg,#ff4d6d,#ff758f);
+      color:white;
+      font-family:Arial;
+      text-align:center;">
+      <h1>YAYYYY 💘🎉</h1>
+      <p>You made me the happiest person alive 🥹❤️</p>
+    </div>
+  `;
+});
+</script>
+
+</body>
+</html>
