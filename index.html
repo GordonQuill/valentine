@@ -8,7 +8,7 @@
 <style>
 body {
   margin: 0;
-  height: 100vh;
+  min-height: 100vh;
   font-family: Arial, sans-serif;
   background: linear-gradient(135deg, #ff4d6d, #ff758f);
   display: flex;
@@ -16,19 +16,18 @@ body {
   align-items: center;
   color: white;
   overflow: hidden;
+  position: relative;
 }
 
-/* ❤️ Падающие сердечки */
+/* ❤️ Сердечки */
 .heart {
-  position: fixed;
+  position: absolute;
   top: -20px;
-  color: rgba(255,255,255,0.7);
-  font-size: 18px;
-  animation: fall 6s linear infinite;
   pointer-events: none;
+  animation: fall 6s linear infinite;
 }
 @keyframes fall {
-  to { transform: translateY(110vh); }
+  to { transform: translateY(120vh); }
 }
 
 .card {
@@ -38,7 +37,6 @@ body {
   width: 90%;
   max-width: 320px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   z-index: 2;
 }
 
@@ -53,43 +51,31 @@ button {
 #yes {
   background: #2ecc71;
   color: white;
-  animation: pulse 1.5s infinite;
   transition: transform 0.2s ease;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
 }
 
 #no {
   background: #e74c3c;
   color: white;
-  position: fixed;
-  z-index: 3;
+  position: absolute;
 }
 
 .counter {
   font-size: 14px;
   opacity: 0.85;
-  margin-top: 8px;
 }
 
 /* 🐱 Котики */
-@keyframes floatCat {
-  0%   { transform: scale(0.8) translateY(10px); opacity: 0; }
-  20%  { opacity: 1; }
-  50%  { transform: scale(1) translateY(-10px); }
-  80%  { opacity: 1; }
-  100% { transform: scale(0.9) translateY(10px); opacity: 0; }
-}
 .cat {
-  position: fixed;
-  width: 90px;
-  z-index: 1;
+  position: absolute;
+  width: 80px;
   pointer-events: none;
-  animation: floatCat 2.5s ease-in-out forwards;
+  animation: cat 2.5s ease forwards;
+}
+@keyframes cat {
+  0% { opacity: 0; transform: scale(0.7); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1); }
 }
 </style>
 </head>
@@ -98,123 +84,3 @@ button {
 
 <div class="card">
   <h1>Привет 💕</h1>
-  <p>
-    <strong>Takhmina</strong>,<br>
-    ты будешь моей Валентинкой? 🌹
-  </p>
-
-  <button id="yes">Да 💖</button>
-  <button id="no">Нет 😅</button>
-
-  <div class="counter" id="counter">Ну попробуй 😼</div>
-</div>
-
-<script>
-const noBtn = document.getElementById("no");
-const yesBtn = document.getElementById("yes");
-const counter = document.getElementById("counter");
-
-let attempts = 0;
-let yesScale = 1;
-
-/* 📍 стартовая позиция кнопки НЕТ */
-function placeNoInitially() {
-  noBtn.style.left = (window.innerWidth / 2 + 40) + "px";
-  noBtn.style.top  = (window.innerHeight / 2 + 40) + "px";
-}
-placeNoInitially();
-
-/* 🐱 КОТИКИ ПО ПОПЫТКАМ */
-const catStages = [
-  // Попытки 1–2
-  [
-    "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif",
-    "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif"
-  ],
-  // Попытки 3–4
-  [
-    "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif",
-    "https://media.giphy.com/media/6uMqzcbWRhoT6/giphy.gif"
-  ],
-  // Попытка 5+
-  [
-    "https://media.giphy.com/media/12PA1eI8FBqEBa/giphy.gif",
-    "https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif",
-    "https://media.giphy.com/media/5i7umUqAOYYEw/giphy.gif"
-  ]
-];
-
-function spawnCats() {
-  let stage = attempts < 3 ? 0 : attempts < 5 ? 1 : 2;
-  const gifs = catStages[stage];
-  const count = Math.floor(Math.random() * 2) + 2;
-
-  for (let i = 0; i < count; i++) {
-    const img = document.createElement("img");
-    img.src = gifs[Math.floor(Math.random() * gifs.length)];
-    img.className = "cat";
-    img.style.left = Math.random() * (window.innerWidth - 100) + "px";
-    img.style.top  = Math.random() * (window.innerHeight - 100) + "px";
-    document.body.appendChild(img);
-    setTimeout(() => img.remove(), 2600);
-  }
-}
-
-/* ❤️ сердечки */
-setInterval(() => {
-  const h = document.createElement("div");
-  h.className = "heart";
-  h.innerText = "❤️";
-  h.style.left = Math.random() * 100 + "vw";
-  h.style.fontSize = Math.random() * 10 + 14 + "px";
-  document.body.appendChild(h);
-  setTimeout(() => h.remove(), 6000);
-}, 700);
-
-/* ❌ НЕТ */
-function moveNo(e) {
-  e.preventDefault();
-  attempts++;
-
-  counter.innerText = `Попытка №${attempts} 😼`;
-  if (attempts === 5) {
-    counter.innerText = "Ладно… я знаю, ты уже улыбаешься 😌";
-  }
-
-  spawnCats();
-
-  const maxX = window.innerWidth - noBtn.offsetWidth - 20;
-  const maxY = window.innerHeight - noBtn.offsetHeight - 20;
-  noBtn.style.left = Math.random() * maxX + "px";
-  noBtn.style.top  = Math.random() * maxY + "px";
-
-  yesScale += 0.15;
-  yesBtn.style.transform = `scale(${yesScale})`;
-}
-
-noBtn.addEventListener("touchstart", moveNo, { passive: false });
-noBtn.addEventListener("mouseover", moveNo);
-
-/* 💖 ДА */
-yesBtn.addEventListener("click", () => {
-  document.body.innerHTML = `
-    <div style="
-      height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      flex-direction:column;
-      background:linear-gradient(135deg,#ff4d6d,#ff758f);
-      color:white;
-      font-family:Arial;
-      text-align:center;">
-      <h1>ЛУЧШЕЕ РЕШЕНИЕ 💘</h1>
-      <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" style="width:180px;">
-      <p>Takhmina сказала «ДА» 🐾❤️</p>
-    </div>
-  `;
-});
-</script>
-
-</body>
-</html>
