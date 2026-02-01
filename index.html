@@ -25,6 +25,7 @@ body {
   color: rgba(255,255,255,0.7);
   font-size: 18px;
   animation: fall 6s linear infinite;
+  pointer-events: none;
 }
 @keyframes fall {
   to { transform: translateY(110vh); }
@@ -66,7 +67,7 @@ button {
   background: #e74c3c;
   color: white;
   position: fixed;
-  z-index: 2;
+  z-index: 3;
 }
 
 .counter {
@@ -116,21 +117,41 @@ const counter = document.getElementById("counter");
 let attempts = 0;
 let yesScale = 1;
 
-/* 🐱 Милые котики */
-const catGifs = [
-  "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif",
-  "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif",
-  "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif",
-  "https://media.giphy.com/media/6uMqzcbWRhoT6/giphy.gif",
-  "https://media.giphy.com/media/12PA1eI8FBqEBa/giphy.gif",
-  "https://media.giphy.com/media/l1J9urAfGd3grKV6E/giphy.gif"
+/* 📍 стартовая позиция кнопки НЕТ */
+function placeNoInitially() {
+  noBtn.style.left = (window.innerWidth / 2 + 40) + "px";
+  noBtn.style.top  = (window.innerHeight / 2 + 40) + "px";
+}
+placeNoInitially();
+
+/* 🐱 КОТИКИ ПО ПОПЫТКАМ */
+const catStages = [
+  // Попытки 1–2
+  [
+    "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif",
+    "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif"
+  ],
+  // Попытки 3–4
+  [
+    "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif",
+    "https://media.giphy.com/media/6uMqzcbWRhoT6/giphy.gif"
+  ],
+  // Попытка 5+
+  [
+    "https://media.giphy.com/media/12PA1eI8FBqEBa/giphy.gif",
+    "https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif",
+    "https://media.giphy.com/media/5i7umUqAOYYEw/giphy.gif"
+  ]
 ];
 
 function spawnCats() {
+  let stage = attempts < 3 ? 0 : attempts < 5 ? 1 : 2;
+  const gifs = catStages[stage];
   const count = Math.floor(Math.random() * 2) + 2;
+
   for (let i = 0; i < count; i++) {
     const img = document.createElement("img");
-    img.src = catGifs[Math.floor(Math.random() * catGifs.length)];
+    img.src = gifs[Math.floor(Math.random() * gifs.length)];
     img.className = "cat";
     img.style.left = Math.random() * (window.innerWidth - 100) + "px";
     img.style.top  = Math.random() * (window.innerHeight - 100) + "px";
@@ -139,7 +160,7 @@ function spawnCats() {
   }
 }
 
-/* ❤️ Сердечки */
+/* ❤️ сердечки */
 setInterval(() => {
   const h = document.createElement("div");
   h.className = "heart";
@@ -150,13 +171,12 @@ setInterval(() => {
   setTimeout(() => h.remove(), 6000);
 }, 700);
 
-/* ❌ Кнопка НЕТ */
+/* ❌ НЕТ */
 function moveNo(e) {
   e.preventDefault();
   attempts++;
 
   counter.innerText = `Попытка №${attempts} 😼`;
-
   if (attempts === 5) {
     counter.innerText = "Ладно… я знаю, ты уже улыбаешься 😌";
   }
@@ -164,4 +184,37 @@ function moveNo(e) {
   spawnCats();
 
   const maxX = window.innerWidth - noBtn.offsetWidth - 20;
-  const maxY = window.innerHei
+  const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+  noBtn.style.left = Math.random() * maxX + "px";
+  noBtn.style.top  = Math.random() * maxY + "px";
+
+  yesScale += 0.15;
+  yesBtn.style.transform = `scale(${yesScale})`;
+}
+
+noBtn.addEventListener("touchstart", moveNo, { passive: false });
+noBtn.addEventListener("mouseover", moveNo);
+
+/* 💖 ДА */
+yesBtn.addEventListener("click", () => {
+  document.body.innerHTML = `
+    <div style="
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      flex-direction:column;
+      background:linear-gradient(135deg,#ff4d6d,#ff758f);
+      color:white;
+      font-family:Arial;
+      text-align:center;">
+      <h1>ЛУЧШЕЕ РЕШЕНИЕ 💘</h1>
+      <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" style="width:180px;">
+      <p>Takhmina сказала «ДА» 🐾❤️</p>
+    </div>
+  `;
+});
+</script>
+
+</body>
+</html>
